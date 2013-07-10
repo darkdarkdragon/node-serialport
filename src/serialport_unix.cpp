@@ -5,6 +5,9 @@
 #include <errno.h>
 #include <termios.h>
 
+#include <sys/ioctl.h>
+
+
 #ifdef __APPLE__
 #include <AvailabilityMacros.h>
 #include <sys/param.h>
@@ -569,6 +572,21 @@ void EIO_Flush(uv_work_t* req) {
   FlushBaton* data = static_cast<FlushBaton*>(req->data);
 
   data->result = tcflush(data->fd, TCIFLUSH);
+}
+
+void EIO_SetRTS(uv_work_t* req) {
+  SetRTSBaton* data = static_cast<SetRTSBaton*>(req->data);
+  int dtr = TIOCM_RTS;
+  if (data->val) {
+    ioctl(data->fd, TIOCMBIS,&dtr); 
+  } else {
+    ioctl(data->fd, TIOCMBIC,&dtr);
+  }
+}
+
+void EIO_SendBreak(uv_work_t* req) {
+  SendBreakBaton* data = static_cast<SendBreakBaton*>(req->data);
+  tcsendbreak(data->fd, data->duration);
 }
 
 #endif

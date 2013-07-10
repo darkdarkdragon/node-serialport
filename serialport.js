@@ -205,6 +205,20 @@ SerialPort.prototype.close = function (callback) {
   }
 };
 
+SerialPort.prototype.setRTS = function (val) {
+  var self = this;
+
+  var fd = this.fd;
+  SerialPortBinding.setRTS(fd, val);
+};
+
+SerialPort.prototype.sendBreak = function (duration) {
+  var self = this;
+
+  var fd = this.fd;
+  SerialPortBinding.sendBreak(fd, duration);
+};
+
 function listUnix (callback) {
   fs.readdir("/dev/serial/by-id", function (err, files) {
     if (err) {

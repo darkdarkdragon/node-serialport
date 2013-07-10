@@ -297,6 +297,74 @@ void EIO_AfterFlush(uv_work_t* req) {
   delete req;
 }
 
+v8::Handle<v8::Value> SetRTS(const v8::Arguments& args) {
+  v8::HandleScope scope;
+
+  // file descriptor
+  if(!args[0]->IsInt32()) {
+    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("First argument must be an int"))));
+  }
+  int fd = args[0]->ToInt32()->Int32Value();
+
+
+  // value
+  if(!args[1]->IsBoolean()) {
+    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("Second argument must be a bool"))));
+  }
+  bool val = args[1]->ToBoolean()->BooleanValue();
+
+  SetRTSBaton* baton = new SetRTSBaton();
+  memset(baton, 0, sizeof(SetRTSBaton));
+  baton->fd = fd;
+  baton->val = val;
+
+  uv_work_t* req = new uv_work_t();
+  req->data = baton;
+  uv_queue_work(uv_default_loop(), req, EIO_SetRTS, (uv_after_work_cb)EIO_AfterSetRTS);
+
+  return scope.Close(v8::Undefined());
+}
+
+void EIO_AfterSetRTS(uv_work_t* req) {
+  SetRTSBaton* data = static_cast<SetRTSBaton*>(req->data);
+
+  delete data;
+  delete req;
+}
+
+v8::Handle<v8::Value> SendBreak(const v8::Arguments& args) {
+  v8::HandleScope scope;
+
+  // file descriptor
+  if(!args[0]->IsInt32()) {
+    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("First argument must be an int"))));
+  }
+  int fd = args[0]->ToInt32()->Int32Value();
+
+
+  if(!args[1]->IsInt32()) {
+    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("Second argument must be an int"))));
+  }
+  int duration = args[1]->ToInt32()->Int32Value();
+
+  SendBreakBaton* baton = new SendBreakBaton();
+  memset(baton, 0, sizeof(SendBreakBaton));
+  baton->fd = fd;
+  baton->duration = duration;
+
+  uv_work_t* req = new uv_work_t();
+  req->data = baton;
+  uv_queue_work(uv_default_loop(), req, EIO_SendBreak, (uv_after_work_cb)EIO_AfterSendBreak);
+
+  return scope.Close(v8::Undefined());
+}
+
+void EIO_AfterSendBreak(uv_work_t* req) {
+  SendBreakBaton* data = static_cast<SendBreakBaton*>(req->data);
+  delete data;
+  delete req;
+}
+
 SerialPortParity ToParityEnum(const v8::Handle<v8::String>& v8str) {
   v8::String::AsciiValue str(v8str);
   if(!strcasecmp(*str, "none")) {
@@ -336,6 +404,8 @@ extern "C" {
     NODE_SET_METHOD(target, "close", Close);
     NODE_SET_METHOD(target, "list", List);
     NODE_SET_METHOD(target, "flush", Flush);
+    NODE_SET_METHOD(target, "setRTS", SetRTS);
+    NODE_SET_METHOD(target, "sendBreak", SendBreak);
   }
 }
 
