@@ -689,7 +689,6 @@ void EIO_Drain(uv_work_t* req) {
   data->result = tcdrain(data->fd);
 }
 
-#endif
 void EIO_SetRTS(uv_work_t* req) {
   SetRTSBaton* data = static_cast<SetRTSBaton*>(req->data);
   int dtr = TIOCM_RTS;
