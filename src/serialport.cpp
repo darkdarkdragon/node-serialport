@@ -389,9 +389,6 @@ void EIO_AfterDrain(uv_work_t* req) {
   delete req;
 }
 
-SerialPortParity NAN_INLINE(ToParityEnum(const v8::Handle<v8::String>& v8str)) {
-  NanScope();
-
 v8::Handle<v8::Value> SetRTS(const v8::Arguments& args) {
   v8::HandleScope scope;
 
@@ -460,7 +457,9 @@ void EIO_AfterSendBreak(uv_work_t* req) {
   delete req;
 }
 
-SerialPortParity ToParityEnum(const v8::Handle<v8::String>& v8str) {
+SerialPortParity NAN_INLINE(ToParityEnum(const v8::Handle<v8::String>& v8str)) {
+  NanScope();
+
   v8::String::AsciiValue str(v8str);
   if(!strcasecmp(*str, "none")) {
     return SERIALPORT_PARITY_NONE;
@@ -501,7 +500,6 @@ extern "C" {
     NODE_SET_METHOD(target, "flush", Flush);
     NODE_SET_METHOD(target, "drain", Drain);
     NODE_SET_METHOD(target, "setRTS", SetRTS);
-
     NODE_SET_METHOD(target, "sendBreak", SendBreak);
 #ifndef WIN32
     SerialportPoller::Init(target);
