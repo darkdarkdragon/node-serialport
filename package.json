@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Welcome your robotic javascript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
@@ -12,7 +12,7 @@
     "module_path" : "./build/{module_name}/v{version}/{configuration}/{node_abi}-{platform}-{arch}/",
     "remote_path" : "./{module_name}/v{version}/{configuration}/",
     "package_name": "{node_abi}-{platform}-{arch}.tar.gz",
-    "host"        : "https://node-serialport.s3.amazonaws.com"
+    "host"        : "https://node-serialport-dark.s3.amazonaws.com"
   },
   "main": "./serialport",
   "repository": {
